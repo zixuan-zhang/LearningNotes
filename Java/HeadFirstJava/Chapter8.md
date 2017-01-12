@@ -46,7 +46,7 @@ public interface Pet {
 
 public class Dog extends Canine implements Pet {
     public void beFriendly() {...} // 必须在这里实现Pet的方法
-    public void play() {...}
+    public void play() 
     public void roam() {...}
     public void eat() {...}
 }
