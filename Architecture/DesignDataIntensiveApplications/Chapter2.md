@@ -46,10 +46,40 @@ The main arguments in favor of the document data model are schema flexibility, b
 
 Schema-on-read: Know the schema when the data is read. Schema-on-write: Know the schema when the data is written.
 
-A hybrid of the relational and document models is a good route for databases to take in the future. 
+A hybrid of the relational and document models is a good route for databases to take in the future.
 
 ## Query Languages for Data
+SQL is a **declarative** query language.
 
+Many commonly used programming languages are **imperative** code. Like:
+```js
+function getSharks() {
+  var sharks = [];
+  for (var i = 0; i < animals.length; i++) {
+    if (animals[i].family == "Sharks") {
+      sharks.push(animals[i]);
+    }
+  }
+  return sharks;
+}
+```
+while SQL, it followed the structure of the relational algebra fairly closely:
+```sql
+select * from animals where family = 'Sharks'
+```
+An imperative language tells the computer to perform certain operations in a certain order. You can imagine stepping through the code line by line, evaluating conditions, updating variables, and deciding whether to go around the loop one more time.
+
+In a declarative query language, like SQL or relational algebra, you just specify the pattern of the data you want: What conditions the results must meet, and how you want the data to be transformed(e.g., sorted, grouped, and aggregated) but not how to achieve the goal. It's up to the database system's query optimizer.
+
+A declarative query language is attractive because it is typically more concise and easier to work with than an imperative API. And it also hides implementation details of the database engine, which makes it possible for the database system to introduce performance improvements without requiring any changes to queries.
+
+Imperative code is very hard to parallelize across multiple cores and multiple machines, because it specifieds instructions that must be performed in a particular order. Declarative languages have a better change of getting faster in parallel execution because they specify only the pattern of the results, not the algorithm that is used to determine the results.
+
+### Declarative Queries on the Web
+In a web browser, using declarative CSS styling is much better than manipulating styles imperatively in JavaScript. Similarly, in databases, declarative query languages like SQL turned out to be much better than imperative query APIs.
+
+### MapReduce Querying
+Nothing to record, just introduce the map-reduce based query languages, like MongoDB
 
 ## Graph-Like Data Models
 
