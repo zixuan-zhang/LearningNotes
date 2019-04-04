@@ -82,6 +82,56 @@ In a web browser, using declarative CSS styling is much better than manipulating
 Nothing to record, just introduce the map-reduce based query languages, like MongoDB
 
 ## Graph-Like Data Models
+What if many-to-many relationships are very common in your data? The relational model can handle simple cases of many-to-many relationships, but as the connections within your data become more complex, it becomes more natural to start modeling your data as a graph.
 
+A graph consists of two kinds of objects: vertices and edges.
+
+### Property Graphs
+
+In the property graph model, each vertex consists of:
+* A unique identifier
+* A set of outgoing edges
+* A set of incoming edges
+* A collection of properties(key-value pairs)
+
+Each edge consists of:
+* A unique identifier
+* The vertex at which the edge starts(tail vertex)
+* The vertex at which the edge ends(head vertex)
+* A label to describe the kind of relationship between the two vertices
+* A collection of porperties
+
+### The Cypher Query Language
+It's a declarative language for a Property Graph model. And this section provides an example.
+
+### Graph Queries in SQL
+It's very complicated when using SQL to query in a graph model. It means SQL is not suitable for graph model cases.
+
+### Triple-Stores and SPARQL
+I a triple-store, all information is stored in the form of very simple three-part statements:(subject, predicate, object). For example, in the triple(Jim, likes, bananas)
+
+The subject of a triple is equivalent to a vertex in a graph. The object is one of the two things:
+1. A value in a primitive datatype, such as a string or a number. In that case, the predicate and object of the triple are equivalent to the key and value of a property on the subject vertex. Like (lucy, age, 33) -> {"age": 33}
+2. Another vertex in the graph. In this case, the predicate is the edge in the graph.
+
+> I'm not interest in the following content in this section. Will come back later if need.
+
+### The Foundation: Datalog
+Datalog is a much older language. It provides the foundation that later query languages build upon.
+
+Datalog's data model is similar to the triple-store model, generalized a bit. Instead of writing a triple as (subject, predicate, object), we write it as predicate(subject, object).
+```datalog
+name(namerica, 'North America')
+type(namerica, continent)
+
+within(usa, namerica)
+```
+
+This is another language processing data. An interesting model and query language.
 
 ## Summary
+Historically, data started out being represented as one big tree (the hierarchical model), but that wasn't good for representing many-to-many relationships, so the relational model was invented to solve that problem. More rencently, developers found that some applications don't fit well in the relational model either. New nonrelational "NoSQL" datastores have diverged in two main directions:
+1. Document databases target use cases where data comes in self-contained documents and relationships between one document and another are rare.
+2. Graph databases go in the opposite direction, targeting use cases where anything is potentially related to everything.
+
+One thing that document and graph databases have in common is that they typically don't enforce a schema for the data they store, which can make it easier to adapt applications to changing requirements. However your application most likely still assumes that data has a certain structure: it's just a question of whether the schema is explicit(enforced on write) or implicit(handled on read).
