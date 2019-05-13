@@ -50,5 +50,14 @@ Design for Hadoop. No field tag specified. When decoding, the reader compare the
 The RPC model tries to make a request to a remote network service look the same as calling a function or method in your programming language, within the same process.
 
 ### Message-Passing Dataflow
+This secsion describles the asynchronous message-passing system. They are similar to RPC that a client's request is delivered to another process with low latency. They are similar to databases that message is not sent via a direct network connection, but goes via an intermediary called a *message broker* (also called message queue or message-oriented middleware), which stores the message temporarily. Using a message broker has several advantages compared to direct RPC:
+* It can act as a buffer if the recipient is unavailable or overload, and thus improve system reliability.
+* It can automatically redeliver messages to a process that has crashed, and thus prevent messages from being lost.
+* It avoid the sender needing to know the IP address and port.
+* It allows one message to be sent to several recipients.
+* It logically decouples the sender from the recipient
+
+However, a difference compared to RPC is that message-passing communication is usually one-way: a sender normally doesn't expect to receive a reply to its messages.
+
 
 ## Summary
