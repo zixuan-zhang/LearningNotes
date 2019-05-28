@@ -100,8 +100,69 @@ public Object pop() {
 
 第三个常见的内存泄漏来源是监听器和其他回调。如果你实现了一个API，其客户端注册回调，但是没有显示的撤销注册回调，除非采取一些操作，否则他们将积累。确保回调是垃圾回收的一种方法，只存储弱引用
 
-因为内存泄漏通常不会表现为明显的故障，所以他们会在系统中保持多年。 
+因为内存泄漏通常不会表现为明显的故障，所以他们会在系统中保持多年。
 
 ## Item 8: Avoid finalizers and cleaners
+`Finalizer`和`Cleaner`的一个缺点是不能保证他们能够及时执行。在一个对象变得无法访问时，到`Finalizer`机制开始运行时，这个时间的任意长的。例如，依赖Finalizer机制关闭文件是严重的错，因为打开的文件描述符是有限的资源。如果由于系统迟迟没有运行而导致许多文件被打开，程序可能会失败。
+
+及时执行Finalizer是垃圾收集算法的一个功能，这个算法在不同的视线中有很大不同。
+
+Finalizer机制线程的优先级低于其他应用程序线程，所以对象被回收的速度低于进入队列的速度。语言规范并不保证哪个线程执行Finalizer机制，因此除了避免使用Finalizer之外，没有更好的方式来防止这类问题。在这个方面，Cleaner机制比Finalizer机制要更好一些，因为Java类的创建者可以控制自己cleaner机制的线程，但cleaner机制仍然在后台运行，在垃圾回收期的控制下运行，但不能保证及时清理。其实，Java规范并不能保证他们会运行。
+
+Finalizer机制的另一个问题是在执行过程中，未捕获的异常会被忽略，并且该对象的Finalizer也会终止，并且不会发出警告。
+
+使用Finalizer和Cleaner机制会导致严重的性能损失。这主要是因为Finalizer机制会阻碍有效的垃圾收集。
+
+**其他的没看，我认为记住这些就行了**
 
 ## Item 9: Prefer try-with-resources to try-finally
+Java类库中包含许多必须通过调用`close`方法手动关闭的资源。客户经常忽视关闭资源，性能会很差。
+
+从以往看，`try-finally`是保证资源正确关闭的最佳方，即使程序抛出异常或返回。
+```java
+static String firstLineOfFile(String path) throw IOException {
+  BufferedReader br = new BufferedReader(new FileReader(path));
+  try {
+    return br.readLine();
+  } finally {
+    br.close();
+  }
+}
+```
+
+当添加第二个资源时，情况会变糟：
+```java
+static void copy(String src, String dst) throw IOException {
+  InputStream in = new FileInputStream(src);
+  try {
+    OutputStream out = new FileOutputStream(dst);
+    try {
+      byte[] buf = new byte[BUFFER_SIZE];
+      int n;
+      while ((n = in.read(buf)) >= 0) {
+        out.write(buf, 0, n);
+      }
+    }finally {
+      out.close();
+    }
+  } finally {
+    in.close();
+  }
+}
+```
+这里有个微妙的缺陷。try和finally的代码都有可能抛出异常。例如`readLine()`方法由于底层物理设备发生故障，会抛出异常，然后调用`close()`函数，仍然会抛出异常。然后最后一个异常会被捕获，而`readLine()`中的异常却被flush了。这可能在实际系统中调试非常复杂——通常你会想诊断第一个异常。
+
+java 7中引入了`try-with-reasouce`语句。要使用这个构造，资源必须实现`AutoCloseable`接口，该接口返回为void的close组成。
+```java
+static void copy(String src, String dst) throw IOException {
+  try (InputStream in = new FileInputStream(src);
+      OutputStream out = new FileOutputStream(dst)) {
+        byte[] buf = new byte[BUFFER_SIZE];
+        int n;
+        while ((n = in.read(buf)) > 0) {
+          out.write(buf, 0, n);
+        }
+      }
+}
+```
+首先这个方式更加精简。而且，如果`readLine()`和`close()`都抛出异常，那么`close()`的异常会被suppress. 这个应该是try-with-source语句来实现的。
