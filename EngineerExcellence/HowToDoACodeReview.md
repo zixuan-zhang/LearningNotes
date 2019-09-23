@@ -88,3 +88,90 @@ In doing a code review, you should make sure that:
 * The code conforms to our style guides.
 
 Make sure to review every line of code you’ve been asked to review, look at the context, make sure you’re improving code health, and compliment developers on good things that they do.
+
+# Navigating a CL in review
+
+## Summary
+1. Does the change make sense? Does it have a good description?
+2. Look at the most important part of the change first. Is it well-designed overall?
+3. Look at the rest of the CL in an appropriate sequence.
+
+## Step One: Take a broad view of the change
+Look at the CL description and what the CL does in general.
+
+## Step Two: Examine the main parts of the CL
+Find the file or files that are the “main” part of this CL. Often, there is one file that has the largest number of logical changes, and it’s the major piece of the CL. Look at these major parts first.
+
+If you see some major design problems with this part of the CL, you should send those comments immediately, even if you don’t have time to review the rest of the CL right now. In fact, reviewing the rest of the CL might be a waste of time
+
+There are two major reasons it’s so important to send these major design comments out immediately:
+
+Developers often mail a CL and then immediately start new work based on that CL while they wait for review. If there are major design problems in the CL you’re reviewing, they’re also going to have to re-work their later CL. You want to catch them before they’ve done too much extra work on top of the problematic design.
+Major design changes take longer to do than small changes.
+
+## Step Three: Look through the rest of the CL in an appropriate sequence
+
+# Speed of Code Reviews
+
+## Why Should Code Reviews Be Fast?
+We optimize for the speed at which a team of developers can produce a product together.
+
+When code reviews are slow, several things happen:
+* The velocity of the team as a whole is decreased.
+* Developers start to protest the code review process.
+* Code health can be impacted.
+
+## How Fast Should Code Reviews Be?
+If you are not in the middle of a focused task, you should do a code review shortly after it comes in.
+
+One business day is the maximum time it should take to respond to a code review request (i.e. first thing the next morning).
+
+## Speed vs. Interruption
+If you are in the middle of a focused task, such as writing code, don’t interrupt yourself to do a code review.
+
+## Fast Responses
+
+## Large CLs
+Ask the developer to split the CL into several smaller CLs.
+
+If a CL can’t be broken up into smaller CLs, and you don’t have time to review the entire thing quickly, then at least write some comments on the overall design of the CL and send it back to the developer for improvement. One of your goals as a reviewer should be to always unblock the developer or enable them to take some sort of further action quickly, without sacrificing code health to do so.
+
+# How to write code review comments
+
+## Summary
+* Be kind.
+* Explain your reasoning.
+* Balance giving explicit directions with just pointing out problems and letting the developer decide.
+* Encourage developers to simplify code or add code comments instead of just explaining the complexity to you.
+
+## Courtesy
+One way to do this is to be sure that you are always making comments about the code and never making comments about the developer.
+
+**Sample**:
+>>> “The concurrency model here is adding complexity to the system without any actual performance benefit that I can see. Because there’s no performance benefit, it’s best for this code to be single-threaded instead of using multiple threads.”
+
+## Explain Why
+One thing you’ll notice about the “good” example from above is that it helps the developer understand why you are making your comment.
+
+Sometimes it’s appropriate to give a bit more explanation around your intent, the best practice you’re following, or how your suggestion improves code health.
+
+## Giving Guidance
+In general it is the developer’s responsibility to fix a CL, not the reviewer’s. You are not required to do detailed design of a solution or write code for the developer. In general you should strike an appropriate balance between pointing out problems and providing direct guidance. Pointing out problems and letting the developer make a decision often helps the developer learn, and makes it easier to do code reviews.
+
+However, sometimes direct instructions, suggestions, or even code are more helpful. The primary goal of code review is to get the best CL possible. A secondary goal is improving the skills of developers so that they require less and less review over time.
+
+## Accepting Explanations
+
+# Handling pushback in code reviews
+Sometimes a developer will push back on a code review. Either they will disagree with your suggestion or they will complain that you are being too strict in general.
+
+## Who is right?
+When a developer disagrees with your suggestion, first take a moment to consider if they are correct. Often, they are closer to the code than you are, and so they might really have a better insight about certain aspects of it.
+
+However, developers are not always right. In this case the reviewer should further explain why they believe that their suggestion is correct. A good explanation demonstrates both an understanding of the developer’s reply, and additional information about why the change is being requested.
+
+## Upsetting Developers
+Reviewers sometimes believe that the developer will be upset if the reviewer insists on an improvement. Sometimes developers do become upset, but it is usually brief and they become very thankful later that you helped them improve the quality of their code.
+
+## Cleaning It Up Later
+A common source of push back is that developers (understandably) want to get things done. They don’t want to go through another round of review just to get this CL in. So they say they will clean something up in a later CL, and thus you should LGTM this CL now. Some developers are very good about this, and will immediately write a follow-up CL that fixes the issue. However, experience shows that as more time passes after a developer writes the original CL, the less likely this clean up is to happen. In fact, usually unless the developer does the clean up immediately after the present CL, it never happens. This isn’t because developers are irresponsible, but because they have a lot of work to do and the cleanup gets lost or forgotten in the press of other work. Thus, it is usually best to insist that the developer clean up their CL now, before the code is in the codebase and “done.” Letting people “clean things up later” is a common way for codebases to degenerate.
